@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Calculate your real hourly wage with RealWagePro. Adjust for taxes, breaks, and more."
+    />
+    <meta
+      name="keywords"
+      content="hourly wage calculator, real wage, freelance rate, tax-adjusted wage, global wage calculator"
+    />
+    <meta name="author" content="RealWagePro" />
+    <title>RealWagePro - Real Hourly Wage Calculator</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #fdfdfd;
+        color: #222;
+        padding: 2rem;
+        max-width: 700px;
+        margin: auto;
+        line-height: 1.6;
+      }
+      h1 {
+        font-size: 2em;
+        margin-bottom: 1em;
+        color: #0077cc;
+      }
+      label,
+      select,
+      input {
+        display: block;
+        margin: 0.5em 0;
+        width: 100%;
+      }
+      input,
+      select {
+        padding: 0.5em;
+        font-size: 1em;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 1em;
+        padding: 0.8em;
+        font-size: 1em;
+        background: #0077cc;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .result {
+        margin-top: 1.5em;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+      footer {
+        margin-top: 3em;
+        font-size: 0.9em;
+        color: #888;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Real Hourly Wage Calculator</h1>
+    <label
+      >Monthly Salary:
+      <input type="number" id="monthly" placeholder="e.g. 3000" />
+    </label>
+    <label
+      >Currency:
+      <select id="currency">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="KRW">KRW</option>
+        <option value="JPY">JPY</option>
+      </select>
+    </label>
+    <label
+      >Working Days per Month:
+      <input type="number" id="days" placeholder="e.g. 20" />
+    </label>
+    <label
+      >Working Hours per Day:
+      <input type="number" id="hours" placeholder="e.g. 8" />
+    </label>
+    <label
+      >Unpaid Break Time (hours/day):
+      <input type="number" id="breaks" value="0" />
+    </label>
+    <label
+      >Tax Deduction (%):
+      <input type="number" id="tax" value="0" />
+    </label>
+
+    <button onclick="calculateWage()">Calculate Hourly Wage</button>
+
+    <div class="result" id="result"></div>
+
+    <footer>
+      &copy; 2025 <a href="https://realwagepro.netlify.app">RealWagePro</a>
+    </footer>
+
+    <script>
+      function calculateWage() {
+        const monthly = parseFloat(document.getElementById("monthly").value);
+        const days = parseFloat(document.getElementById("days").value);
+        const hours = parseFloat(document.getElementById("hours").value);
+        const breaks = parseFloat(document.getElementById("breaks").value || 0);
+        const tax = parseFloat(document.getElementById("tax").value || 0);
+        const currency = document.getElementById("currency").value;
+
+        if (!monthly || !days || !hours) {
+          document.getElementById("result").textContent =
+            "Please fill in all required fields.";
+          return;
+        }
+
+        const totalHours = (hours - breaks) * days;
+        const afterTax = monthly * (1 - tax / 100);
+        const hourly = afterTax / totalHours;
+
+        document.getElementById(
+          "result"
+        ).textContent = `Your actual hourly wage is ${currency} ${hourly.toFixed(
+          2
+        )}`;
+
+        localStorage.setItem(
+          "wageData",
+          JSON.stringify({ monthly, days, hours, breaks, tax, currency })
+        );
+      }
+
+      window.onload = () => {
+        const saved = localStorage.getItem("wageData");
+        if (saved) {
+          const data = JSON.parse(saved);
+          document.getElementById("monthly").value = data.monthly;
+          document.getElementById("days").value = data.days;
+          document.getElementById("hours").value = data.hours;
+          document.getElementById("breaks").value = data.breaks;
+          document.getElementById("tax").value = data.tax;
+          document.getElementById("currency").value = data.currency;
+          calculateWage();
+        }
+      };
+    </script>
+  </body>
+</html>
